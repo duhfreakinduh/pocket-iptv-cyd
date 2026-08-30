@@ -128,6 +128,7 @@ class PocketIPTV(QMainWindow):
         self.current_index: Optional[int] = None
         self.last_playing_index: Optional[int] = None
         self.retry_count = 0
+        self.retry_pending = False
 
         self.vlc_instance = vlc.Instance(
             "--no-video-title-show",
@@ -323,6 +324,7 @@ class PocketIPTV(QMainWindow):
 
         self.current_index = index
         self.last_playing_index = index
+        self.retry_pending = False
         if not reconnecting:
             self.retry_count = 0
         channel = self.channels[index]
@@ -460,15 +462,24 @@ class PocketIPTV(QMainWindow):
             self.status.setText("Buffering…")
         elif state in (vlc.State.Error, vlc.State.Ended):
             self.play_button.setText("▶ Play")
-            if self.last_playing_index is not None and self.retry_count < 3:
+            if (
+                self.last_playing_index is not None
+                and self.retry_count < 3
+                and not self.retry_pending
+            ):
                 self.retry_count += 1
+                self.retry_pending = True
                 self.status.setText(f"Reconnecting ({self.retry_count}/3)…")
                 index = self.last_playing_index
-                QTimer.singleShot(1500, lambda idx=index: self.play_channel(idx, reconnecting=True))
-            else:
+                QTimer.singleShot(1500, lambda idx=index: self._retry_channel(idx))
+            elif self.retry_count >= 3 and not self.retry_pending:
                 self.status.setText("Stream stopped — tap Play to retry")
         else:
             self.play_button.setText("▶ Play")
+
+    def _retry_channel(self, index: int) -> None:
+        self.retry_pending = False
+        self.play_channel(index, reconnecting=True)
 
     def closeEvent(self, event) -> None:
         self._save_settings()
