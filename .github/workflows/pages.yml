@@ -5,7 +5,10 @@ on:
     branches: [main]
     paths:
       - 'web/**'
+      - 'scripts/build_web_channels.py'
       - '.github/workflows/pages.yml'
+  schedule:
+    - cron: '17 12 * * *'
   workflow_dispatch:
 
 permissions:
@@ -23,9 +26,16 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test U.S. HLS channels
+        run: python scripts/build_web_channels.py web/channels.json
       - name: Configure Pages
         uses: actions/configure-pages@v5
         with:
