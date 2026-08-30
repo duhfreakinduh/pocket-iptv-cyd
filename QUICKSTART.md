@@ -50,7 +50,7 @@ ssh YOUR_USERNAME@pocketiptv.local
 On the Pi, download this repository, enter it, and run the installer:
 
 ```bash
-git clone YOUR_GITHUB_REPOSITORY_URL
+git clone https://github.com/duhfreakinduh/pocket-iptv-cyd.git
 cd pocket-iptv-cyd
 sudo bash pi/install.sh
 ```
