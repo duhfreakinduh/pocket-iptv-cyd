@@ -1,101 +1,93 @@
-# Easy-mode quick start
+# Easy-mode quick start — Raspberry Pi 4 + touchscreen
 
-Do these steps in order. Test on a wall charger before putting the parts on a
-battery.
+This is the recommended build. The Raspberry Pi 4 runs the screen, video, audio, playlist, and touch controls by itself.
 
-## 1. Buy and identify the parts
+## 1. Build the hardware
 
-Use [SHOPPING_LIST.md](SHOPPING_LIST.md). On the yellow board, confirm the
-printed model says `ESP32-2432S028R`. Take a clear photo of both sides before
-mounting it; the USB connector and display controller can vary by revision.
+Connect:
 
-## 2. Prepare the Pi microSD card
+1. Raspberry Pi 4 to the touchscreen with HDMI.
+2. Touchscreen USB touch cable to a Pi USB port.
+3. Pi to a reliable 5 V / 3 A USB-C wall supply.
+4. Screen to its required power source.
+5. Optional speakers/headphones through HDMI, USB, Bluetooth, or the Pi 4 analog jack.
+
+Do the first setup on wall power, not a battery.
+
+## 2. Prepare the microSD card
 
 On a Windows or Mac computer:
 
-1. Install [Raspberry Pi Imager](https://www.raspberrypi.com/software/).
+1. Install Raspberry Pi Imager.
 2. Insert a 32 GB or larger microSD card.
-3. Choose **Raspberry Pi Zero 2 W**.
-4. Choose **Raspberry Pi OS Lite (64-bit)**.
-5. In OS customization set:
-   - Hostname: `pocketiptv`
-   - A username and a strong password you will remember
-   - Your home Wi-Fi now; add your phone hotspot later
-   - Wi-Fi country: `US`
-   - Enable SSH with password authentication for the first build
-6. Write the card, eject it, and insert it into the Pi.
+3. Choose **Raspberry Pi 4**.
+4. Choose **Raspberry Pi OS with desktop, 64-bit**.
+5. In OS customization set your username/password, home Wi-Fi, locale, and optionally enable SSH.
+6. Write the card and boot the Pi.
 
-For watching away from home, set your Android hotspot to **2.4 GHz**. The Pi
-Zero 2 W does not support a 5 GHz-only hotspot.
+Finish the normal Raspberry Pi desktop setup and confirm the touchscreen works before installing Pocket IPTV.
 
-## 3. Flash the CYD firmware
+## 3. Install Pocket IPTV
 
-Use the prebuilt one-file flasher in [firmware/FLASH_EASY.md](firmware/FLASH_EASY.md).
-Start with `ili9341`; use `st7789` only if the screen stays white. Developers
-who want to compile it themselves can use PlatformIO as described in
-[firmware/README.md](firmware/README.md).
-
-The first boot asks you to touch four crosshairs. Use the plastic stylus and be
-precise. Calibration is saved on the ESP32.
-
-## 4. Start and install the Pi software
-
-Power the Pi from a reliable 5 V, 2.5 A wall supply. Wait about 90 seconds, then
-find it in your router or use SSH:
-
-```bash
-ssh YOUR_USERNAME@pocketiptv.local
-```
-
-On the Pi, download this repository, enter it, and run the installer:
+Open Terminal on the Pi and run:
 
 ```bash
 git clone https://github.com/duhfreakinduh/pocket-iptv-cyd.git
 cd pocket-iptv-cyd
-sudo bash pi/install.sh
+bash pi4/install.sh
 ```
 
-The installer prints a six-digit control-page PIN. Save it. You can show it
-again later with:
+The installer adds VLC, Python, PyQt5, the touchscreen app, a sample playlist, and an autostart launcher.
+
+## 4. Launch it
+
+Run:
 
 ```bash
-sudo pocket-iptv-pin
+~/PocketIPTV/start-pocket-iptv.sh
 ```
 
-## 5. Connect Pi to screen
+The app opens full-screen. It will also open automatically after the Pi desktop logs in on future boots.
 
-1. Power off the Pi.
-2. Put the Micro-USB OTG adapter in the Pi port marked **USB**, not `PWR IN`.
-3. Connect the CYD's USB data cable to that adapter.
-4. Plug the 8-ohm speaker into the CYD's two-pin `SPEAK` connector.
-5. Power the Pi through `PWR IN`. The Pi powers the CYD through the data cable.
+## 5. Test video and audio
 
-See [docs/WIRING.md](docs/WIRING.md) before powering it if the labels differ.
+The included sample playlist has one public test stream. Tap it and make sure you have:
 
-## 6. Add a legal playlist
+- moving video
+- audio
+- working touch controls
+- working volume slider
+- stable playback for at least 20–30 minutes
 
-Connect your phone to the same Wi-Fi and open:
+If you have audio but a black video box, see the X11 fallback in [pi4/README.md](pi4/README.md).
 
-```text
-http://pocketiptv.local:8080
-```
+## 6. Add your own authorized M3U playlist
 
-Enter the installer PIN. Paste or upload your authorized `.m3u` playlist. Do
-not paste private subscription URLs into a public website or public issue.
+The easiest method is:
 
-The included playlist contains one public test video so you can prove the
-hardware works before diagnosing a provider stream.
+1. Put your `.m3u` playlist on a USB flash drive.
+2. Tap **Import M3U** in Pocket IPTV.
+3. Pick the file.
+4. Pocket IPTV copies it to `~/PocketIPTV/channels.m3u` and reloads it.
 
-## 7. Make it portable
+You can then search channels, filter by group, and mark favorites.
 
-After it works for 20 minutes on wall power:
+## 7. Add your phone hotspot
 
-1. Shut the Pi down over SSH with `sudo shutdown -h now`.
-2. Move the Pi power cable to a 5 V USB power bank.
-3. Turn on your phone's 2.4 GHz hotspot.
-4. Power the player and wait 60-90 seconds.
-5. Use a vented temporary mount; do not seal the Pi or battery in a hot box.
+The Pi 4 supports 2.4 GHz and 5 GHz Wi-Fi. Add your phone hotspot from Raspberry Pi OS Wi-Fi settings, disconnect home Wi-Fi, and prove the player works through the hotspot before calling the build portable.
 
-Expected battery time from a decent 10,000 mAh bank is roughly **4-7 hours**,
-depending on conversion losses, brightness, stream complexity, and battery
-condition.
+## 8. Make it portable
+
+Only after the wall-powered build is stable:
+
+1. Shut the Pi down normally.
+2. Move the Pi to a USB power bank capable of stable 5 V / 3 A output.
+3. Power the touchscreen as required by its manufacturer.
+4. Turn on your phone hotspot.
+5. Boot and test again.
+
+Do not seal the Pi 4 and battery into a hot, unvented enclosure. Add a heatsink or small fan for long playback sessions.
+
+## Legacy version
+
+The old Pi Zero 2 W + ESP32 Cheap Yellow Display instructions are still preserved in the repository, but they are no longer the recommended path. The Pi 4 touchscreen build removes the ESP32 flashing, serial link, low-frame-rate JPEG transport, and special speaker wiring.
