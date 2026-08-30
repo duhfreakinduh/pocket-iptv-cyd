@@ -1,12 +1,12 @@
 {
-  "name": "Quick Launch TV",
-  "short_name": "Quick TV",
-  "description": "Installable browser player for public/free M3U IPTV streams.",
+  "name": "Quick Launch TV USA",
+  "short_name": "Quick TV USA",
+  "description": "Installable browser player for publicly available U.S. IPTV streams.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#090b10",
-  "theme_color": "#090b10",
+  "background_color": "#07101d",
+  "theme_color": "#08111f",
   "icons": [
     {
       "src": "./icon.svg",
