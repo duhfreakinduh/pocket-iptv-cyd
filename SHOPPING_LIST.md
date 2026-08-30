@@ -1,45 +1,69 @@
-# Shopping list
+# Shopping list — recommended Pi 4 touchscreen build
 
-Prices and availability change. These were checked on **August 30, 2026**.
-Choose the exact model numbers; look-alike boards are the biggest source of
-failed builds.
+Prices change, so use the ranges below as a sanity check rather than a guaranteed price. The key upgrade is that you no longer need an ESP32/CYD, OTG adapter, serial data cable, or tiny CYD speaker.
 
 ## Required
 
-| Qty | Part | Expected price | Buy/check |
-| ---: | --- | ---: | --- |
-| 1 | Raspberry Pi Zero 2 W | $15-$21 | [Official specs/buy links](https://www.raspberrypi.com/products/raspberry-pi-zero-2-w/), [CanaKit listing](https://www.canakit.com/raspberry-pi-zero-2-w.html), [PiShop pre-soldered option](https://www.pishop.us/product/raspberry-pi-zero-2w-with-headers/) |
-| 1 | ESP32-2432S028R 2.8-inch resistive CYD, ILI9341 preferred | $14-$22 fast US shipping; $8-$15 slower marketplace | [Amazon DIYmalls listing](https://www.amazon.com/DIYmalls-ESP32-2432S028R-Resistive-ESP-WROOM-32-Development/dp/B0CG2WQGP9), [board buying guide](https://makeradvisor.com/tools/cyd-cheap-yellow-display-esp32-2432s028r/) |
-| 1 | 32 GB or 64 GB genuine A1 microSD card | $8-$15 | Buy locally from a known retailer; avoid suspicious marketplace cards |
-| 1 | Micro-USB OTG male to USB-A female adapter | $3-$10 | [PiShop $3.95 cable](https://www.pishop.us/product/usb-otg-host-cable-microb-otg-male-to-a-female/), [Adafruit tiny adapter](https://www.adafruit.com/product/2910) |
-| 1 | USB data cable matching the CYD: USB-C or Micro-USB by revision | $0-$8 | Often included; it must carry data, not charge-only |
-| 1 | 8-ohm, 0.5-1 W mini speaker with **2-pin 1.25 mm** plug | $3-$10 | [CYD speaker guidance](https://github.com/witnessmenow/ESP32-Cheap-Yellow-Display/blob/main/ADDONS.md), [example speaker](https://www.amazon.com/AOICRIE-Full-Range-Advertising-JST-PH2-5mm-2-Electronic/dp/B0F48J1XFG) |
-| 1 | 5 V USB power bank, 10,000 mAh, 2 A or better output | $15-$30 | A known-brand bank you already own is fine |
-| 1 | Micro-USB power cable for the Pi | $0-$8 | Use a short, thicker cable to reduce voltage drop |
+| Qty | Part | Good target | Notes |
+| ---: | --- | --- | --- |
+| 1 | Raspberry Pi 4 Model B | 2 GB RAM or better | 2 GB is enough for the dedicated player; 4 GB is fine if the price is close |
+| 1 | 5-inch or 7-inch HDMI touchscreen | 800×480 or 1024×600, capacitive touch | A 5-inch screen keeps the build genuinely portable; 7-inch is easier to use |
+| 1 | microSD card | 32 GB or 64 GB, genuine A1/A2 | Buy from a reputable retailer |
+| 1 | Pi 4 wall power supply | stable 5 V / 3 A USB-C | Use wall power for the entire first build |
+| 1 | HDMI cable/adapter | micro-HDMI from Pi 4 to the screen's HDMI input | Match the exact connector on your display |
+| 1 | USB touch cable | screen touch controller to a Pi USB port | Often included with the screen |
 
-## Strongly recommended
+Official Pi 4 product page: https://www.raspberrypi.com/products/raspberry-pi-4-model-b/
 
-| Qty | Part | Why |
-| ---: | --- | --- |
-| 1 | Small Pi Zero 2 W stick-on heatsink | FFmpeg keeps the CPU busy; a heatsink reduces throttling |
-| 1 | 5 V, 2.5 A wall supply | Use wall power for the first build and troubleshooting |
-| 1 | USB microSD reader | Needed if the computer has no card slot |
-| 1 | Plastic CYD stylus | Resistive touch calibrates better with a point than a finger |
-| 1 | Short hook-and-loop strap or removable mounting tape | Temporary enclosure for the first successful weekend |
+## Portable-power add-ons
 
-## Budget
+| Qty | Part | Good target | Why |
+| ---: | --- | --- | --- |
+| 1 | USB power bank | 10,000 mAh+, stable 5 V / 3 A output | Powers the Pi away from an outlet |
+| 1 | Short USB-C power cable | low-resistance cable | Helps avoid undervoltage warnings |
+| 1 | Small Pi 4 heatsink or fan | low-profile | Video playback can keep the SoC warm |
 
-- If you own a card, battery, cables, and speaker: about **$35-$50**.
-- Buying every required item new: about **$60-$95**.
-- Do not pay Pi-scalper bundle prices. The Zero 2 W's official launch price was
-  $15, and normal US board listings remain close to that range.
+Some touchscreens need their own 5 V power input. If yours does, make sure the power bank has enough outputs and total current capacity for both the Pi and screen.
+
+## Audio choices
+
+Use whichever is easiest for your enclosure:
+
+- speakers built into the HDMI display
+- a small USB speaker
+- Bluetooth speaker/headphones
+- wired headphones or a small powered speaker from the Pi 4 analog jack
+
+## Expected budget
+
+A realistic new-parts target is roughly:
+
+- Pi 4 board: **$35–$60** depending on RAM and seller
+- 5–7 inch touchscreen: **$30–$70**
+- microSD: **$8–$15**
+- wall supply/cables: **$15–$25**
+- portable power bank: **$20–$40** if you do not already own one
+- cooling/enclosure extras: **$5–$20**
+
+If you already own a Pi 4, card, power bank, or cables, the project gets much cheaper.
+
+## Best-size recommendation
+
+For the mini portable TV idea, the sweet spot is:
+
+**Raspberry Pi 4 + 5-inch 800×480 or 1024×600 capacitive HDMI touchscreen + 10,000 mAh power bank.**
+
+It is small enough to carry, but large enough that the on-screen channel list and controls are usable with a finger.
 
 ## Do not accidentally buy
 
-- Original Raspberry Pi Zero W: it is too slow for this build.
-- Raspberry Pi Pico/Pico W: it cannot run Linux or FFmpeg.
-- ESP32-2432S032, 3.5-inch, capacitive, or ESP32-S3 display unless you are ready
-  to create a new firmware profile.
-- A charge-only USB cable.
-- A bare Li-ion/LiPo cell without a protected charging/power circuit.
-- A 4-ohm high-power speaker; use the small 8-ohm speaker specified above.
+- Raspberry Pi Pico/Pico W — it cannot run this Linux/VLC application.
+- Original single-core Pi Zero W — too slow for this version.
+- A display that is SPI-only unless you specifically want to configure Linux framebuffer drivers.
+- A resistive touchscreen if you want phone-like finger control.
+- A charge-only USB cable for the touchscreen's USB connection.
+- A weak 5 V / 1 A or 2 A supply for the Pi 4.
+
+## Legacy CYD hardware
+
+The old Raspberry Pi Zero 2 W + ESP32-2432S028R parts are only needed for the legacy version in `pi/` and `firmware/`. They are **not** needed for the new recommended build.
