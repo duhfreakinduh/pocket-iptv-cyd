@@ -1,76 +1,82 @@
-# Pocket IPTV CYD
+# Pocket IPTV
 
-A tiny portable IPTV player built from a **Raspberry Pi Zero 2 W** and the
-common **ESP32-2432S028R 2.8-inch Cheap Yellow Display (CYD)**.
+A portable touchscreen IPTV player. **Version 2 now defaults to a Raspberry Pi 4 + HDMI touchscreen** because it is much easier to build, faster, smoother, and more reliable than the original Pi Zero 2 W + ESP32 Cheap Yellow Display design.
 
-The Raspberry Pi does the hard work: it opens an authorized HLS/IPTV stream,
-decodes it with FFmpeg, shrinks it to 320x240, and sends JPEG video plus mono
-audio over one USB cable. The ESP32 draws the video, plays audio through the
-CYD speaker connector, and sends touchscreen commands back to the Pi.
+## Recommended build: Raspberry Pi 4 touchscreen
 
-## What the finished player does
+The Pi 4 handles the whole job by itself:
 
-- Plays ordinary non-DRM HLS/HTTP streams from an M3U playlist.
-- Uses your phone's **2.4 GHz hotspot** away from home.
-- Shows 320x240 video at a target 6-10 frames per second.
-- Plays mono audio through a tiny 8-ohm speaker connected to the CYD.
-- Touch controls: previous, pause/live, next, volume down, and volume up.
-- Local phone control page at `http://pocketiptv.local:8080`.
-- PIN-protected playlist upload and channel selection.
-- Keeps IPTV URLs and credentials on your Pi.
+- full-motion VLC video playback
+- touchscreen channel browser
+- search and channel groups
+- favorites
+- previous / play-pause / next controls
+- volume and mute
+- M3U import from the screen
+- automatic reconnect attempts
+- 2.4 GHz and 5 GHz Wi-Fi
+- automatic launch after desktop login
+- HDMI, USB, Bluetooth, or analog audio
 
-## Honest limitations
+There is **no ESP32 firmware, USB serial bridge, JPEG frame conversion, or separate CYD speaker wiring** in the recommended build.
 
-This is a fun pocket TV, not a replacement for a phone or commercial streaming
-device. The original ESP32 CYD has limited RAM and a serial USB bridge, so the
-video is intentionally low frame rate and mono. DRM services such as Netflix,
-Hulu, Disney+, and most paid-app video cannot be played by this project. It
-does not include channels or bypass subscriptions. Use only streams you are
-authorized to watch.
-
-## The exact board this release targets
-
-- Raspberry Pi **Zero 2 W**, not the original single-core Zero W.
-- CYD model **ESP32-2432S028R**, 2.8-inch, 240x320, resistive touch.
-- Default firmware profile: **ILI9341** display controller.
-- An alternate ST7789 build profile is included for newer two-USB revisions.
-
-The board name must match. Similar-looking 3.2-inch, 3.5-inch, capacitive-touch,
-or ESP32-S3 boards need a different firmware profile.
-
-## Start here
+Start here:
 
 1. Read [SHOPPING_LIST.md](SHOPPING_LIST.md).
 2. Follow [QUICKSTART.md](QUICKSTART.md).
-3. Use [docs/WIRING.md](docs/WIRING.md) for the exact cable and speaker setup.
-4. If anything fails, use [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md).
+3. The Pi 4 software and troubleshooting notes are in [pi4/README.md](pi4/README.md).
 
-The six-day build schedule is in [docs/WEEKEND_PLAN.md](docs/WEEKEND_PLAN.md).
+## One-command software install
+
+After Raspberry Pi OS Desktop is running:
+
+```bash
+git clone https://github.com/duhfreakinduh/pocket-iptv-cyd.git
+cd pocket-iptv-cyd
+bash pi4/install.sh
+```
+
+The app installs to `~/PocketIPTV` and starts automatically after desktop login.
+
+## What you need
+
+- Raspberry Pi 4 Model B, 2 GB RAM or better
+- 5-inch or 7-inch HDMI touchscreen
+- 32 GB+ microSD card
+- 5 V / 3 A USB-C power supply
+- HDMI connection to the display
+- USB touch cable from display to Pi
+- optional 10,000 mAh power bank for portable use
+
+## Supported streams
+
+Pocket IPTV is designed for ordinary non-DRM streams that VLC can open, including many HLS/M3U8, HTTP, RTSP, and local media sources. It does not supply channels, scrape credentials, decrypt DRM, or bypass subscriptions. Use only streams you are authorized to watch.
+
+## Legacy Pi Zero + CYD build
+
+The original Pi Zero 2 W + ESP32-2432S028R project is still preserved in this repository for anyone who wants the ultra-small hardware experiment. Its files remain under `pi/`, `firmware/`, and the older docs.
+
+That version intentionally runs low-resolution JPEG video over USB serial and is much more difficult to assemble. For a player you actually want to use every day, build the Pi 4 touchscreen version above.
 
 ## Repository map
 
-| Folder | Purpose |
+| Path | Purpose |
 | --- | --- |
-| `pi/` | Raspberry Pi player, web controller, service, and installer |
-| `firmware/` | PlatformIO firmware for the ESP32 CYD |
-| `setup-wizard/` | Optional local Hugging Face Gradio playlist/config builder |
-| `docs/` | Wiring, architecture, build plan, and troubleshooting |
-| `.github/workflows/` | Automated Python tests and firmware builds |
+| `pi4/` | Recommended Raspberry Pi 4 touchscreen player and installer |
+| `pi/` | Legacy Pi Zero 2 W backend |
+| `firmware/` | Legacy ESP32 CYD firmware |
+| `setup-wizard/` | Optional playlist/config tooling from the original build |
+| `docs/` | Legacy architecture, wiring, and troubleshooting notes |
 
-## Data path
+## Version 2 architecture
 
 ```mermaid
 flowchart LR
-    A["Authorized IPTV URL"] --> B["Pi Zero 2 W + FFmpeg"]
-    B --> C["USB serial: JPEG + PCM"]
-    C --> D["ESP32 CYD"]
-    D --> E["2.8-inch video"]
-    D --> F["Tiny speaker"]
-    D -->|"touch commands"| B
+    A["Authorized IPTV / M3U playlist"] --> B["Raspberry Pi 4"]
+    B --> C["VLC playback engine"]
+    C --> D["HDMI touchscreen"]
+    D -->|"touch controls"| B
+    C --> E["HDMI / USB / Bluetooth / analog audio"]
 ```
 
-## Support boundary
-
-The software supports unencrypted, non-DRM streams that FFmpeg can open. It
-does not obtain, scrape, decrypt, restream, or redistribute programming. See
-[LEGAL_AND_SAFETY.md](LEGAL_AND_SAFETY.md).
+See [LEGAL_AND_SAFETY.md](LEGAL_AND_SAFETY.md) for the project boundary.
