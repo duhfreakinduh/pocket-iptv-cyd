@@ -4,20 +4,19 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#08111f" />
-  <meta name="description" content="Quick Launch TV USA — a simple browser player for publicly available U.S. IPTV streams." />
+  <meta name="description" content="Quick Launch TV USA — browser-friendly U.S. live TV streams." />
   <link rel="manifest" href="./manifest.webmanifest" />
   <link rel="icon" href="./icon.svg" type="image/svg+xml" />
   <title>Quick Launch TV USA</title>
-  <script defer src="https://cdn.jsdelivr.net/npm/hls.js@1/dist/hls.min.js"></script>
   <style>
     :root{color-scheme:dark;--bg:#07101d;--panel:#0e1828;--panel2:#142238;--line:#263a56;--text:#f7f9fd;--muted:#9eb0c8;--accent:#4ea1ff;--good:#51d98a;--warn:#ffc667;--bad:#ff7373}
     *{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at top,#16345c 0,#07101d 42%);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-    button,input,select{font:inherit}.app{max-width:1500px;margin:auto;padding:12px}.top{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}.brand{font-size:1.45rem;font-weight:900;margin-right:auto}.brand span{color:var(--accent)}.usa{font-size:.75rem;border:1px solid var(--line);border-radius:999px;padding:4px 8px;color:#cbd8e8}
-    .btn,.input,.select{border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:12px;min-height:44px;padding:9px 12px}.btn{cursor:pointer;font-weight:800}.btn:hover{border-color:#54749d}.btn.primary{background:#176ec5;border-color:#3b97ed}.btn.good{background:#17613e;border-color:#2f915f}
+    button,input{font:inherit}.app{max-width:1500px;margin:auto;padding:12px}.top{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}.brand{font-size:1.45rem;font-weight:900;margin-right:auto}.brand span{color:var(--accent)}.usa{font-size:.75rem;border:1px solid var(--line);border-radius:999px;padding:4px 8px;color:#cbd8e8}
+    .btn,.input{border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:12px;min-height:44px;padding:9px 12px}.btn{cursor:pointer;font-weight:800}.btn:hover{border-color:#54749d}.btn.primary{background:#176ec5;border-color:#3b97ed}.btn.good{background:#17613e;border-color:#2f915f}
     .grid{display:grid;grid-template-columns:minmax(300px,390px) 1fr;gap:12px}.side,.player{background:rgba(14,24,40,.96);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 18px 55px rgba(0,0,0,.24)}
     .controls{padding:12px;border-bottom:1px solid var(--line);display:grid;gap:8px}.row{display:flex;gap:8px}.grow{flex:1;min-width:0}.note{color:var(--muted);font-size:.82rem;line-height:1.35}.channelList{height:calc(100vh - 190px);min-height:430px;overflow:auto;padding:7px}
-    .channel{width:100%;text-align:left;border:0;border-radius:12px;background:transparent;color:var(--text);padding:10px;display:grid;grid-template-columns:42px 1fr auto;gap:10px;align-items:center;cursor:pointer}.channel:hover,.channel.active{background:#182941}.logo{width:42px;height:42px;border-radius:10px;background:#202f44;object-fit:contain}.fallback{display:grid;place-items:center;font-weight:900;color:#8da9ce}.name{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.meta{color:var(--muted);font-size:.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.star{color:#ffd35c;font-size:1.2rem}
-    .videoWrap{background:#000;aspect-ratio:16/9;display:grid;place-items:center;position:relative}.videoWrap video{width:100%;height:100%;background:#000}.overlay{position:absolute;left:12px;right:12px;bottom:12px;background:rgba(4,8,14,.82);padding:10px 12px;border-radius:12px;display:none}.overlay.show{display:block}.now{padding:14px;border-top:1px solid var(--line)}.nowTitle{font-size:1.2rem;font-weight:900}.nowMeta,.status{color:var(--muted);margin-top:4px}.status.ok{color:var(--good)}.status.warn{color:var(--warn)}.status.bad{color:var(--bad)}.transport{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.transport .btn{min-width:95px}.empty{padding:24px;color:var(--muted);text-align:center}.footer{padding:12px 2px 2px;color:var(--muted);font-size:.78rem;line-height:1.45}.pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:3px 8px;margin:0 5px 5px 0}.count{font-size:.8rem;color:var(--muted);padding:0 3px}
+    .channel{width:100%;text-align:left;border:0;border-radius:12px;background:transparent;color:var(--text);padding:10px;display:grid;grid-template-columns:42px 1fr auto;gap:10px;align-items:center;cursor:pointer}.channel:hover,.channel.active{background:#182941}.logo{width:42px;height:42px;border-radius:10px;background:#202f44;object-fit:contain}.fallback{display:grid;place-items:center;font-weight:900;color:#8da9ce}.name{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.meta{color:var(--muted);font-size:.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.star{color:#ffd35c;font-size:1.2rem}.failed{opacity:.58}
+    .videoWrap{background:#000;aspect-ratio:16/9;display:grid;place-items:center;position:relative}.videoWrap video{width:100%;height:100%;background:#000}.overlay{position:absolute;left:12px;right:12px;bottom:12px;background:rgba(4,8,14,.88);padding:10px 12px;border-radius:12px;display:none}.overlay.show{display:block}.now{padding:14px;border-top:1px solid var(--line)}.nowTitle{font-size:1.2rem;font-weight:900}.nowMeta,.status{color:var(--muted);margin-top:4px}.status.ok{color:var(--good)}.status.warn{color:var(--warn)}.status.bad{color:var(--bad)}.transport{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.transport .btn{min-width:95px}.empty{padding:24px;color:var(--muted);text-align:center}.footer{padding:12px 2px 2px;color:var(--muted);font-size:.78rem;line-height:1.45}.pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:3px 8px;margin:0 5px 5px 0}.count{font-size:.8rem;color:var(--muted);padding:0 3px}
     @media(max-width:850px){.app{padding:7px}.grid{grid-template-columns:1fr}.player{order:1}.side{order:2}.channelList{height:52vh;min-height:320px}.brand{width:100%}.top .btn{flex:1}.transport .btn{flex:1;min-width:82px}}
   </style>
 </head>
@@ -33,21 +32,20 @@
       <div class="controls">
         <div class="row">
           <input id="search" class="input grow" placeholder="Search U.S. channels" autocomplete="off" />
-          <select id="group" class="select"><option>All categories</option></select>
         </div>
         <div class="row">
           <button id="favoritesBtn" class="btn grow">☆ Favorites</button>
           <button id="reloadBtn" class="btn">Reload</button>
         </div>
-        <div class="count" id="count">Loading U.S. channels…</div>
-        <div class="note">U.S.-only directory powered by the IPTV-org United States playlist. Streams are loaded directly from their original hosts.</div>
+        <div class="count" id="count">Loading browser-friendly U.S. channels…</div>
+        <div class="note">This version uses Free-TV's U.S. list and only shows secure HLS streams that have the best chance of playing directly in a browser.</div>
       </div>
       <div id="channelList" class="channelList"><div class="empty">Loading channels…</div></div>
     </aside>
 
     <main class="player">
       <div class="videoWrap">
-        <video id="video" controls playsinline crossorigin="anonymous"></video>
+        <video id="video" controls playsinline></video>
         <div id="overlay" class="overlay"></div>
       </div>
       <div class="now">
@@ -66,43 +64,58 @@
   </div>
 
   <div class="footer">
-    <span class="pill">USA only</span><span class="pill">No account</span><span class="pill">No stream proxy</span><span class="pill">Favorites stay on device</span>
-    <div>Quick Launch TV does not host or rebroadcast channels. Stream availability, rights, regional restrictions, browser support, and CORS policies can change. Use streams you are authorized to watch.</div>
+    <span class="pill">USA only</span><span class="pill">HTTPS HLS only</span><span class="pill">No account</span><span class="pill">No stream proxy</span>
+    <div>Quick Launch TV does not host or rebroadcast channels. Some stations can still block browser playback or change their stream address. Failed stations are dimmed for the rest of the session.</div>
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1/dist/hls.min.js"></script>
 <script>
-const PLAYLIST='https://iptv-org.github.io/iptv/countries/us.m3u';
+const PLAYLIST='https://raw.githubusercontent.com/Free-TV/IPTV/master/playlists/playlist_usa.m3u8';
 const $=id=>document.getElementById(id);
 const ATTR=/([\w-]+)="([^"]*)"/g;
-const state={channels:[],filtered:[],current:-1,favorites:new Set(JSON.parse(localStorage.getItem('qltv-usa-favorites')||'[]')),favoritesOnly:false,hls:null,installPrompt:null};
+const state={channels:[],filtered:[],current:-1,favorites:new Set(JSON.parse(localStorage.getItem('qltv-usa-favorites')||'[]')),favoritesOnly:false,hls:null,installPrompt:null,failed:new Set(),networkRetries:0,mediaRetries:0};
 
 function parseM3U(text){
   const lines=text.replace(/\r/g,'').split('\n');const out=[];let meta=null;
   for(const raw of lines){const line=raw.trim();if(!line)continue;
-    if(line.startsWith('#EXTINF')){const attrs={};for(const m of line.matchAll(ATTR))attrs[m[1]]=m[2];const comma=line.indexOf(',');meta={name:comma>=0?line.slice(comma+1).trim():'Channel',group:attrs['group-title']||'Other',logo:attrs['tvg-logo']||'',id:attrs['tvg-id']||''};continue;}
+    if(line.startsWith('#EXTINF')){const attrs={};for(const m of line.matchAll(ATTR))attrs[m[1]]=m[2];const comma=line.indexOf(',');meta={name:comma>=0?line.slice(comma+1).trim():'Channel',group:attrs['group-title']||'USA',logo:attrs['tvg-logo']||'',id:attrs['tvg-id']||'',country:attrs['tvg-country']||''};continue;}
     if(line.startsWith('#'))continue;
-    if(/^https?:/i.test(line)){const x=meta||{name:`Channel ${out.length+1}`,group:'Other',logo:'',id:''};out.push({...x,url:line});meta=null;}
+    if(/^https?:/i.test(line)){const x=meta||{name:`Channel ${out.length+1}`,group:'USA',logo:'',id:'',country:'US'};out.push({...x,url:line});meta=null;}
   }
   return out;
 }
+function browserFriendly(c){return /^https:\/\//i.test(c.url)&&/\.m3u8(?:[?#]|$)/i.test(c.url);}
 function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function setStatus(text,kind=''){const e=$('status');e.textContent=text;e.className='status '+kind;}
 function saveFavs(){localStorage.setItem('qltv-usa-favorites',JSON.stringify([...state.favorites]));}
-function rebuildGroups(){const current=$('group').value;const groups=[...new Set(state.channels.map(c=>c.group||'Other'))].sort((a,b)=>a.localeCompare(b));$('group').innerHTML='<option>All categories</option>'+groups.map(g=>`<option>${esc(g)}</option>`).join('');if(groups.includes(current))$('group').value=current;}
-function applyFilter(){const q=$('search').value.trim().toLowerCase();const group=$('group').value;state.filtered=[];state.channels.forEach((c,i)=>{if(state.favoritesOnly&&!state.favorites.has(c.url))return;if(group!=='All categories'&&c.group!==group)return;if(q&&!`${c.name} ${c.group}`.toLowerCase().includes(q))return;state.filtered.push(i);});$('count').textContent=`${state.filtered.length.toLocaleString()} of ${state.channels.length.toLocaleString()} U.S. channels`;render();}
-function render(){const list=$('channelList');if(!state.filtered.length){list.innerHTML='<div class="empty">No matching U.S. channels</div>';return;}const frag=document.createDocumentFragment();for(const idx of state.filtered){const c=state.channels[idx];const b=document.createElement('button');b.className='channel'+(idx===state.current?' active':'');b.onclick=()=>playIndex(idx);const img=c.logo?`<img class="logo" loading="lazy" referrerpolicy="no-referrer" src="${esc(c.logo)}" onerror="this.outerHTML='<div class=&quot;logo fallback&quot;>TV</div>'">`:'<div class="logo fallback">TV</div>';b.innerHTML=`${img}<div><div class="name">${esc(c.name)}</div><div class="meta">${esc(c.group||'Other')}</div></div><div class="star">${state.favorites.has(c.url)?'★':''}</div>`;frag.appendChild(b);}list.replaceChildren(frag);}
+function applyFilter(){const q=$('search').value.trim().toLowerCase();state.filtered=[];state.channels.forEach((c,i)=>{if(state.favoritesOnly&&!state.favorites.has(c.url))return;if(q&&!`${c.name} ${c.id}`.toLowerCase().includes(q))return;state.filtered.push(i);});$('count').textContent=`${state.filtered.length.toLocaleString()} browser-ready U.S. channels`;render();}
+function render(){const list=$('channelList');if(!state.filtered.length){list.innerHTML='<div class="empty">No matching U.S. channels</div>';return;}const frag=document.createDocumentFragment();for(const idx of state.filtered){const c=state.channels[idx];const b=document.createElement('button');b.className='channel'+(idx===state.current?' active':'')+(state.failed.has(c.url)?' failed':'');b.onclick=()=>playIndex(idx);const img=c.logo?`<img class="logo" loading="lazy" referrerpolicy="no-referrer" src="${esc(c.logo)}" onerror="this.outerHTML='<div class=&quot;logo fallback&quot;>TV</div>'">`:'<div class="logo fallback">TV</div>';const badge=state.failed.has(c.url)?'⚠':(state.favorites.has(c.url)?'★':'');b.innerHTML=`${img}<div><div class="name">${esc(c.name)}</div><div class="meta">${state.failed.has(c.url)?'Failed this session':'Live • USA'}</div></div><div class="star">${badge}</div>`;frag.appendChild(b);}list.replaceChildren(frag);}
 function cleanupHls(){if(state.hls){state.hls.destroy();state.hls=null;}}
 function filteredPosition(){return state.filtered.indexOf(state.current);}
 function previous(){if(!state.filtered.length)return;let p=filteredPosition();p=p<=0?state.filtered.length-1:p-1;playIndex(state.filtered[p]);}
 function next(){if(!state.filtered.length)return;let p=filteredPosition();p=p<0||p>=state.filtered.length-1?0:p+1;playIndex(state.filtered[p]);}
-function playIndex(idx){const c=state.channels[idx];if(!c)return;state.current=idx;render();$('nowTitle').textContent=c.name;$('nowMeta').textContent=`${c.group||'Other'} • United States`;$('favBtn').textContent=state.favorites.has(c.url)?'★ Favorite':'☆ Favorite';playUrl(c.url);}
-function playUrl(url){cleanupHls();const v=$('video');v.pause();v.removeAttribute('src');v.load();$('overlay').classList.remove('show');setStatus('Connecting…');if(location.protocol==='https:'&&url.startsWith('http:')){setStatus('This channel uses HTTP and is blocked by secure browsers. Try another channel.','warn');return;}if(v.canPlayType('application/vnd.apple.mpegurl')){v.src=url;v.play().catch(()=>{});return;}if(window.Hls&&Hls.isSupported()){const h=new Hls({enableWorker:true,lowLatencyMode:true,backBufferLength:30});state.hls=h;h.loadSource(url);h.attachMedia(v);h.on(Hls.Events.MANIFEST_PARSED,()=>v.play().catch(()=>{}));h.on(Hls.Events.ERROR,(_e,data)=>{if(data.fatal){setStatus(`Stream failed (${data.details}). Try another channel.`,'bad');$('overlay').textContent='This stream may be offline, geo-blocked, or blocking browser playback.';$('overlay').classList.add('show');}});return;}v.src=url;v.play().catch(()=>setStatus('This browser cannot play the stream format.','bad'));}
+function playIndex(idx){const c=state.channels[idx];if(!c)return;state.current=idx;state.networkRetries=0;state.mediaRetries=0;render();$('nowTitle').textContent=c.name;$('nowMeta').textContent='Live • United States';$('favBtn').textContent=state.favorites.has(c.url)?'★ Favorite':'☆ Favorite';playUrl(c.url);}
+function markFailed(url,message){state.failed.add(url);render();setStatus(message,'bad');$('overlay').textContent='This station is not accepting browser playback right now. Tap Next to try another U.S. channel.';$('overlay').classList.add('show');}
+function playUrl(url){
+  cleanupHls();const v=$('video');v.pause();v.removeAttribute('src');v.load();$('overlay').classList.remove('show');setStatus('Connecting…');
+  if(v.canPlayType('application/vnd.apple.mpegurl')){v.src=url;v.play().catch(()=>markFailed(url,'Could not start this stream. Try Next.'));return;}
+  if(window.Hls&&Hls.isSupported()){
+    const h=new Hls({enableWorker:true,lowLatencyMode:false,backBufferLength:20,manifestLoadingMaxRetry:2,levelLoadingMaxRetry:2,fragLoadingMaxRetry:2});state.hls=h;h.loadSource(url);h.attachMedia(v);
+    h.on(Hls.Events.MANIFEST_PARSED,()=>{setStatus('Stream found — starting…','ok');v.play().catch(()=>setStatus('Tap ▶ Play to start this channel.','warn'));});
+    h.on(Hls.Events.ERROR,(_e,data)=>{if(!data.fatal)return;
+      if(data.type===Hls.ErrorTypes.NETWORK_ERROR&&state.networkRetries<1){state.networkRetries++;setStatus('Retrying stream…','warn');h.startLoad();return;}
+      if(data.type===Hls.ErrorTypes.MEDIA_ERROR&&state.mediaRetries<1){state.mediaRetries++;setStatus('Repairing playback…','warn');h.recoverMediaError();return;}
+      markFailed(url,`Stream failed (${data.details||'playback error'}). Try Next.`);cleanupHls();
+    });return;
+  }
+  v.src=url;v.play().catch(()=>markFailed(url,'This browser cannot play this channel. Try Next.'));
+}
 function toggleFavorite(){if(state.current<0)return;const url=state.channels[state.current].url;if(state.favorites.has(url))state.favorites.delete(url);else state.favorites.add(url);saveFavs();$('favBtn').textContent=state.favorites.has(url)?'★ Favorite':'☆ Favorite';applyFilter();}
 function toggleFavFilter(){state.favoritesOnly=!state.favoritesOnly;$('favoritesBtn').textContent=state.favoritesOnly?'★ Showing Favorites':'☆ Favorites';applyFilter();}
-async function load(){setStatus('Loading U.S. channel list…');$('channelList').innerHTML='<div class="empty">Loading channels…</div>';try{const r=await fetch(PLAYLIST,{cache:'no-store'});if(!r.ok)throw new Error(`HTTP ${r.status}`);state.channels=parseM3U(await r.text());state.current=-1;rebuildGroups();applyFilter();setStatus(`Loaded ${state.channels.length.toLocaleString()} U.S. channels`,'ok');}catch(e){state.channels=[];state.filtered=[];render();$('count').textContent='U.S. playlist unavailable';setStatus(`Could not load channel list: ${e.message}`,'bad');}}
+async function load(){setStatus('Loading U.S. channel list…');$('channelList').innerHTML='<div class="empty">Loading channels…</div>';try{const r=await fetch(PLAYLIST,{cache:'no-store'});if(!r.ok)throw new Error(`HTTP ${r.status}`);const all=parseM3U(await r.text());state.channels=all.filter(browserFriendly);state.current=-1;state.failed.clear();applyFilter();setStatus(`Loaded ${state.channels.length.toLocaleString()} browser-friendly U.S. channels`,'ok');}catch(e){state.channels=[];state.filtered=[];render();$('count').textContent='U.S. playlist unavailable';setStatus(`Could not load channel list: ${e.message}`,'bad');}}
 
-$('reloadBtn').onclick=load;$('search').addEventListener('input',applyFilter);$('group').addEventListener('change',applyFilter);$('favoritesBtn').onclick=toggleFavFilter;$('prevBtn').onclick=previous;$('nextBtn').onclick=next;$('favBtn').onclick=toggleFavorite;$('playBtn').onclick=()=>{const v=$('video');if(state.current<0&&state.filtered.length){playIndex(state.filtered[0]);return;}if(v.paused)v.play().catch(()=>playIndex(state.current));else v.pause();};$('fullBtn').onclick=()=>{const v=$('video');if(v.requestFullscreen)v.requestFullscreen();};$('video').addEventListener('playing',()=>setStatus('Playing','ok'));$('video').addEventListener('pause',()=>{if(state.current>=0)setStatus('Paused');});$('video').addEventListener('waiting',()=>setStatus('Buffering…','warn'));$('video').addEventListener('error',()=>setStatus('Playback error — try another channel.','bad'));
+$('reloadBtn').onclick=load;$('search').addEventListener('input',applyFilter);$('favoritesBtn').onclick=toggleFavFilter;$('prevBtn').onclick=previous;$('nextBtn').onclick=next;$('favBtn').onclick=toggleFavorite;$('playBtn').onclick=()=>{const v=$('video');if(state.current<0&&state.filtered.length){playIndex(state.filtered[0]);return;}if(v.paused)v.play().catch(()=>playIndex(state.current));else v.pause();};$('fullBtn').onclick=()=>{const v=$('video');if(v.requestFullscreen)v.requestFullscreen();};$('video').addEventListener('playing',()=>{$('overlay').classList.remove('show');setStatus('Playing','ok');});$('video').addEventListener('pause',()=>{if(state.current>=0&&!state.failed.has(state.channels[state.current]?.url))setStatus('Paused');});$('video').addEventListener('waiting',()=>setStatus('Buffering…','warn'));
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();state.installPrompt=e;$('installBtn').hidden=false;});$('installBtn').onclick=async()=>{if(!state.installPrompt)return;state.installPrompt.prompt();await state.installPrompt.userChoice;state.installPrompt=null;$('installBtn').hidden=true;};
 if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 load();
