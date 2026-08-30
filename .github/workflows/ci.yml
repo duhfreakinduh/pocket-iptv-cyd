@@ -1,0 +1,55 @@
+name: Test and build
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: pi/requirements.txt
+      - name: Install service dependencies
+        run: python -m pip install -r pi/requirements.txt
+      - name: Compile Python
+        run: python -m compileall -q pi/pocket_iptv setup-wizard/core.py
+      - name: Test Pi service
+        run: PYTHONPATH=pi python -m unittest discover -s pi/tests -v
+      - name: Test setup wizard core
+        run: PYTHONPATH=pi:setup-wizard python -m unittest discover -s setup-wizard/tests -v
+
+  firmware:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install PlatformIO
+        run: python -m pip install platformio==6.1.18
+      - name: Build all CYD profiles
+        working-directory: firmware
+        env:
+          CI: "true"
+          PLATFORMIO_DISABLE_UPGRADE_CHECK: "1"
+          PLATFORMIO_SETTING_ENABLE_TELEMETRY: "no"
+          PLATFORMIO_SETTING_CHECK_PLATFORMIO_INTERVAL: "999999999"
+        run: pio run
+      - name: Upload firmware build files
+        uses: actions/upload-artifact@v4
+        with:
+          name: pocket-iptv-cyd-firmware-builds
+          if-no-files-found: error
+          path: |
+            firmware/.pio/build/*/firmware.bin
+            firmware/.pio/build/*/firmware.elf
+            firmware/prebuilt/*

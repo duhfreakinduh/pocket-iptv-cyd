@@ -1,0 +1,25 @@
+[Unit]
+Description=Pocket IPTV CYD player
+Wants=network-online.target
+After=network-online.target avahi-daemon.service
+
+[Service]
+Type=simple
+User=pocketiptv
+Group=pocketiptv
+SupplementaryGroups=dialout
+WorkingDirectory=/opt/pocket-iptv
+ExecStart=/opt/pocket-iptv/venv/bin/python -m pocket_iptv --config /etc/pocket-iptv/config.toml
+Restart=on-failure
+RestartSec=3
+TimeoutStopSec=8
+Environment=PYTHONUNBUFFERED=1
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/etc/pocket-iptv
+MemoryMax=400M
+
+[Install]
+WantedBy=multi-user.target

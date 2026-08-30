@@ -1,0 +1,13 @@
+#!/usr/bin/env python3
+"""Print the local control-page PIN; intended to be run with sudo."""
+
+from pathlib import Path
+import re
+
+config = Path("/etc/pocket-iptv/config.toml")
+if not config.exists():
+    raise SystemExit("Pocket IPTV is not installed.")
+match = re.search(r'^admin_pin\s*=\s*"([0-9]{4,12})"', config.read_text(), re.MULTILINE)
+if not match:
+    raise SystemExit("No valid admin_pin was found.")
+print(f"Pocket IPTV control PIN: {match.group(1)}")

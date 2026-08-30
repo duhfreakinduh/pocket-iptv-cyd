@@ -1,0 +1,22 @@
+[server]
+host = "0.0.0.0"
+port = 8080
+admin_pin = "000000"
+secret_key = "replace-this-with-a-long-random-secret-before-use"
+
+[screen]
+serial_port = "auto"
+baud = 2000000
+width = 320
+height = 240
+fps = 8
+jpeg_quality = 12
+audio_sample_rate = 16000
+
+[playback]
+playlist = "/etc/pocket-iptv/channels.m3u"
+start_channel = 0
+volume = 65
+user_agent = "PocketIPTV/1.0"
+ffmpeg_path = "/usr/bin/ffmpeg"
+reconnect_delay = 2.0
