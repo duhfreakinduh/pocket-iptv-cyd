@@ -2,6 +2,30 @@
 
 A portable touchscreen IPTV player. **Version 2 now defaults to a Raspberry Pi 4 + HDMI touchscreen** because it is much easier to build, faster, smoother, and more reliable than the original Pi Zero 2 W + ESP32 Cheap Yellow Display design.
 
+## Quick Launch TV — no hardware build required
+
+The repository now also includes an installable browser/PWA version in [`web/`](web/). It is for people who want the same basic experience on a phone, tablet, Chromebook, laptop, or desktop without building a mini TV.
+
+Quick Launch TV includes:
+
+- Free-TV as the default playlist source; that project states its goal is to include only officially free/free-to-air channels
+- optional IPTV-org Public, Science, Education, News, and United States directories
+- custom HTTPS M3U/M3U8 URL loading
+- local M3U file import
+- HLS playback with native HLS or hls.js
+- search and channel groups
+- favorites stored only in the browser
+- channel logos when the playlist supplies them
+- previous / play-pause / next controls
+- fullscreen playback
+- copy-stream-URL fallback for streams that need VLC or another native player
+- installable PWA support
+- no accounts and no stream proxy/rehosting
+
+A GitHub Pages deployment workflow is included at `.github/workflows/pages.yml`. Enable **GitHub Pages → Source: GitHub Actions** in the repository settings, run the workflow, and the `web/` app becomes a one-link launcher.
+
+Browser note: some third-party streams will not play in a web page because of HTTP mixed-content rules, codec support, geo-restrictions, or the stream host's CORS policy. The Raspberry Pi/VLC build remains the more compatible option.
+
 ## Recommended build: Raspberry Pi 4 touchscreen
 
 The Pi 4 handles the whole job by itself:
@@ -62,6 +86,7 @@ That version intentionally runs low-resolution JPEG video over USB serial and is
 
 | Path | Purpose |
 | --- | --- |
+| `web/` | Quick Launch TV browser/PWA player — no Raspberry Pi required |
 | `pi4/` | Recommended Raspberry Pi 4 touchscreen player and installer |
 | `pi/` | Legacy Pi Zero 2 W backend |
 | `firmware/` | Legacy ESP32 CYD firmware |
