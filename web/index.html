@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#090b10" />
+  <meta name="description" content="Quick Launch TV - installable browser IPTV player for public/free M3U streams." />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+  <title>Quick Launch TV</title>
+  <script defer src="https://cdn.jsdelivr.net/npm/hls.js@1/dist/hls.min.js"></script>
+  <style>
+    :root{color-scheme:dark;--bg:#090b10;--panel:#111722;--panel2:#151d2b;--line:#273143;--text:#f7f9fc;--muted:#9cabc0;--accent:#55a7ff;--good:#54d68c;--warn:#ffbf66;--danger:#ff7070}
+    *{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at top,#152139 0,#090b10 42%);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh}
+    button,input,select{font:inherit}.app{max-width:1500px;margin:auto;padding:14px}.topbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px}.brand{font-size:1.4rem;font-weight:800;letter-spacing:.2px;margin-right:auto}.brand span{color:var(--accent)}
+    .btn,.select,.input{border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:12px;min-height:44px;padding:9px 12px}.btn{cursor:pointer;font-weight:700}.btn:hover{border-color:#4b6282}.btn.primary{background:#1877d8;border-color:#2f8ef2}.btn.good{background:#17653e;border-color:#278c59}.btn.ghost{background:transparent}.btn:disabled{opacity:.5;cursor:not-allowed}
+    .grid{display:grid;grid-template-columns:minmax(300px,390px) 1fr;gap:12px}.sidebar,.playerCard{background:rgba(17,23,34,.94);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 16px 50px rgba(0,0,0,.22)}
+    .controls{padding:12px;border-bottom:1px solid var(--line);display:grid;gap:8px}.row{display:flex;gap:8px}.row>*{min-width:0}.grow{flex:1}.sourceNote{color:var(--muted);font-size:.82rem;line-height:1.35}.channelList{height:calc(100vh - 230px);min-height:420px;overflow:auto;padding:7px}.channel{width:100%;text-align:left;border:0;border-radius:11px;background:transparent;color:var(--text);padding:10px;display:grid;grid-template-columns:42px 1fr auto;gap:10px;align-items:center;cursor:pointer}.channel:hover,.channel.active{background:#1b2637}.logo{width:42px;height:42px;border-radius:10px;background:#202a39;object-fit:contain}.fallbackLogo{display:grid;place-items:center;font-weight:800;color:#8ca6ca}.name{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.meta{color:var(--muted);font-size:.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.star{font-size:1.25rem;color:#ffd35c}
+    .videoWrap{background:#000;aspect-ratio:16/9;display:grid;place-items:center;position:relative}.videoWrap video{width:100%;height:100%;background:#000}.overlay{position:absolute;inset:auto 12px 12px 12px;background:rgba(5,8,12,.78);padding:10px 12px;border-radius:12px;backdrop-filter:blur(8px);display:none}.overlay.show{display:block}.now{padding:14px;border-top:1px solid var(--line)}.nowTitle{font-size:1.2rem;font-weight:800}.nowMeta,.status{color:var(--muted);margin-top:4px}.transport{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.transport .btn{min-width:100px}.status.ok{color:var(--good)}.status.warn{color:var(--warn)}.status.bad{color:var(--danger)}
+    .empty{padding:22px;color:var(--muted);text-align:center}.footer{color:var(--muted);font-size:.78rem;padding:12px 2px 2px;line-height:1.4}.pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:3px 8px;margin-right:5px;font-size:.75rem;color:var(--muted)}
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,.74);display:none;place-items:center;padding:18px;z-index:20}.modal.show{display:grid}.modalCard{width:min(720px,100%);background:#111722;border:1px solid var(--line);border-radius:18px;padding:18px}.modalCard h2{margin-top:0}.modalCard textarea{width:100%;min-height:90px;background:#0b111b;color:#fff;border:1px solid var(--line);border-radius:12px;padding:10px}.modalActions{display:flex;justify-content:flex-end;gap:8px;margin-top:12px;flex-wrap:wrap}
+    @media(max-width:850px){.app{padding:8px}.grid{grid-template-columns:1fr}.sidebar{order:2}.channelList{height:50vh;min-height:320px}.playerCard{order:1}.brand{width:100%}.topbar .btn{flex:1}.videoWrap{border-radius:0}.transport .btn{flex:1;min-width:84px}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="brand">Quick <span>Launch TV</span></div>
+    <button id="installBtn" class="btn good" hidden>Install App</button>
+    <button id="customBtn" class="btn">Custom M3U</button>
+    <label class="btn ghost" for="fileInput">Open M3U File</label>
+    <input id="fileInput" type="file" accept=".m3u,.m3u8,text/plain" hidden />
+  </div>
+
+  <div class="grid">
+    <aside class="sidebar">
+      <div class="controls">
+        <select id="source" class="select">
+          <option value="free-tv">Free-TV / Officially Free</option>
+          <option value="iptv-public">IPTV-org / Public</option>
+          <option value="iptv-science">IPTV-org / Science</option>
+          <option value="iptv-education">IPTV-org / Education</option>
+          <option value="iptv-news">IPTV-org / News</option>
+          <option value="iptv-us">IPTV-org / United States</option>
+        </select>
+        <div class="row">
+          <input id="search" class="input grow" placeholder="Search channels" autocomplete="off" />
+          <select id="group" class="select"><option>All groups</option></select>
+        </div>
+        <div class="row">
+          <button id="favoritesBtn" class="btn grow">☆ Favorites</button>
+          <button id="reloadBtn" class="btn">Reload</button>
+        </div>
+        <div class="sourceNote" id="sourceNote">Free-TV says its list is limited to channels officially provided free to viewers.</div>
+      </div>
+      <div id="channelList" class="channelList"><div class="empty">Loading channels…</div></div>
+    </aside>
+
+    <main class="playerCard">
+      <div class="videoWrap">
+        <video id="video" controls playsinline crossorigin="anonymous"></video>
+        <div id="overlay" class="overlay"></div>
+      </div>
+      <div class="now">
+        <div id="nowTitle" class="nowTitle">Choose a channel</div>
+        <div id="nowMeta" class="nowMeta">No stream loaded</div>
+        <div id="status" class="status">Ready</div>
+        <div class="transport">
+          <button id="prevBtn" class="btn">◀ Prev</button>
+          <button id="playBtn" class="btn primary">▶ Play</button>
+          <button id="nextBtn" class="btn">Next ▶</button>
+          <button id="favBtn" class="btn">☆ Favorite</button>
+          <button id="copyBtn" class="btn">Copy URL</button>
+          <button id="fullBtn" class="btn">Fullscreen</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="footer">
+    <span class="pill">No accounts</span><span class="pill">No stream proxy</span><span class="pill">Favorites stay on device</span>
+    <div style="margin-top:6px">Quick Launch TV only loads playlist links supplied by third parties or by you. Availability, rights, regional restrictions, browser codec support, and CORS policies can change. Use streams you are authorized to watch.</div>
+  </div>
+</div>
+
+<div id="customModal" class="modal" role="dialog" aria-modal="true">
+  <div class="modalCard">
+    <h2>Load a custom M3U URL</h2>
+    <p class="sourceNote">Paste an HTTPS URL to an M3U/M3U8 playlist. The URL is fetched directly by your browser and is not uploaded to this app.</p>
+    <textarea id="customUrl" placeholder="https://example.com/playlist.m3u"></textarea>
+    <div class="modalActions">
+      <button id="cancelCustom" class="btn">Cancel</button>
+      <button id="loadCustom" class="btn primary">Load Playlist</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SOURCES={
+  'free-tv':{name:'Free-TV / Officially Free',url:'https://raw.githubusercontent.com/Free-TV/IPTV/master/playlist.m3u8',note:'Free-TV describes this playlist as free-to-air or officially free Internet channels, with no paid channels.'},
+  'iptv-public':{name:'IPTV-org / Public',url:'https://iptv-org.github.io/iptv/categories/public.m3u',note:'Community-maintained public-category directory from IPTV-org. Verify individual stream rights and availability.'},
+  'iptv-science':{name:'IPTV-org / Science',url:'https://iptv-org.github.io/iptv/categories/science.m3u',note:'Community-maintained science-category directory from IPTV-org.'},
+  'iptv-education':{name:'IPTV-org / Education',url:'https://iptv-org.github.io/iptv/categories/education.m3u',note:'Community-maintained education-category directory from IPTV-org.'},
+  'iptv-news':{name:'IPTV-org / News',url:'https://iptv-org.github.io/iptv/categories/news.m3u',note:'Community-maintained news-category directory from IPTV-org. Some streams can be geo-restricted.'},
+  'iptv-us':{name:'IPTV-org / United States',url:'https://iptv-org.github.io/iptv/countries/us.m3u',note:'Community-maintained United States directory from IPTV-org. Availability and rights vary by channel.'}
+};
+const $=id=>document.getElementById(id);
+const state={channels:[],filtered:[],current:-1,favorites:new Set(JSON.parse(localStorage.getItem('qltv-favorites')||'[]')),favoritesOnly:false,hls:null,installPrompt:null,sourceName:'',sourceUrl:''};
+const ATTR=/([\w-]+)="([^"]*)"/g;
+
+function parseM3U(text){
+  const lines=text.replace(/\r/g,'').split('\n');
+  const out=[]; let meta=null;
+  for(const raw of lines){const line=raw.trim(); if(!line) continue;
+    if(line.startsWith('#EXTINF')){const attrs={}; for(const m of line.matchAll(ATTR)) attrs[m[1]]=m[2]; const comma=line.indexOf(','); meta={name:comma>=0?line.slice(comma+1).trim():'Channel',group:attrs['group-title']||'Other',logo:attrs['tvg-logo']||'',id:attrs['tvg-id']||''}; continue;}
+    if(line.startsWith('#')) continue;
+    if(/^(https?:|rtsp:|rtmp:)/i.test(line)){const x=meta||{name:`Channel ${out.length+1}`,group:'Other',logo:'',id:''}; out.push({...x,url:line}); meta=null;}
+  }
+  return out;
+}
+function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function saveFavs(){localStorage.setItem('qltv-favorites',JSON.stringify([...state.favorites]));}
+function setStatus(text,kind=''){const el=$('status');el.textContent=text;el.className='status '+kind;}
+function sourceNote(text){$('sourceNote').textContent=text;}
+
+async function loadSource(key){const src=SOURCES[key]; if(!src)return; state.sourceName=src.name;state.sourceUrl=src.url;sourceNote(src.note);await loadPlaylistUrl(src.url,src.name);}
+async function loadPlaylistUrl(url,name='Custom playlist'){
+  setStatus('Loading playlist…'); $('channelList').innerHTML='<div class="empty">Loading channels…</div>';
+  try{const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw new Error(`HTTP ${r.status}`);const text=await r.text();loadText(text,name,url);}
+  catch(e){state.channels=[];render();setStatus(`Playlist could not be loaded: ${e.message}`,'bad');sourceNote('Browser fetch failed. The playlist host may block cross-origin access or be temporarily unavailable.');}
+}
+function loadText(text,name,url='local file'){
+  state.channels=parseM3U(text);state.sourceName=name;state.sourceUrl=url;state.current=-1;state.favoritesOnly=false;$('favoritesBtn').textContent='☆ Favorites';rebuildGroups();applyFilter();setStatus(`Loaded ${state.channels.length.toLocaleString()} channels`,'ok');
+}
+function rebuildGroups(){const current=$('group').value;const groups=[...new Set(state.channels.map(c=>c.group||'Other'))].sort((a,b)=>a.localeCompare(b));$('group').innerHTML='<option>All groups</option>'+groups.map(g=>`<option>${esc(g)}</option>`).join('');if(groups.includes(current))$('group').value=current;}
+function applyFilter(){const q=$('search').value.trim().toLowerCase();const group=$('group').value;state.filtered=[];state.channels.forEach((c,i)=>{if(state.favoritesOnly&&!state.favorites.has(c.url))return;if(group!=='All groups'&&c.group!==group)return;if(q&&!`${c.name} ${c.group}`.toLowerCase().includes(q))return;state.filtered.push(i);});render();}
+function render(){const list=$('channelList');if(!state.filtered.length){list.innerHTML='<div class="empty">No matching channels</div>';return;}const frag=document.createDocumentFragment();for(const idx of state.filtered){const c=state.channels[idx];const b=document.createElement('button');b.className='channel'+(idx===state.current?' active':'');b.onclick=()=>playIndex(idx);const img=c.logo?`<img class="logo" loading="lazy" referrerpolicy="no-referrer" src="${esc(c.logo)}" onerror="this.outerHTML='<div class=&quot;logo fallbackLogo&quot;>TV</div>'">`:'<div class="logo fallbackLogo">TV</div>';b.innerHTML=`${img}<div><div class="name">${esc(c.name)}</div><div class="meta">${esc(c.group||'Other')}</div></div><div class="star">${state.favorites.has(c.url)?'★':''}</div>`;frag.appendChild(b);}list.replaceChildren(frag);}
+function filteredPosition(){return state.filtered.indexOf(state.current);}
+function previous(){if(!state.filtered.length)return;let p=filteredPosition();p=p<=0?state.filtered.length-1:p-1;playIndex(state.filtered[p]);}
+function next(){if(!state.filtered.length)return;let p=filteredPosition();p=p<0||p>=state.filtered.length-1?0:p+1;playIndex(state.filtered[p]);}
+function cleanupHls(){if(state.hls){state.hls.destroy();state.hls=null;}}
+function playIndex(idx){const c=state.channels[idx];if(!c)return;state.current=idx;render();$('nowTitle').textContent=c.name;$('nowMeta').textContent=`${c.group||'Other'} • ${state.sourceName}`;$('favBtn').textContent=state.favorites.has(c.url)?'★ Favorite':'☆ Favorite';playUrl(c.url);}
+function playUrl(url){cleanupHls();const v=$('video');v.pause();v.removeAttribute('src');v.load();$('overlay').classList.remove('show');setStatus('Connecting…');
+  if(location.protocol==='https:'&&url.startsWith('http:')){setStatus('This HTTP stream is blocked on an HTTPS web app. Try another channel or open it in a desktop player.','warn');return;}
+  if(v.canPlayType('application/vnd.apple.mpegurl')){v.src=url;v.play().catch(()=>{});return;}
+  if(window.Hls&&Hls.isSupported()){const h=new Hls({enableWorker:true,lowLatencyMode:true,backBufferLength:30});state.hls=h;h.loadSource(url);h.attachMedia(v);h.on(Hls.Events.MANIFEST_PARSED,()=>v.play().catch(()=>{}));h.on(Hls.Events.ERROR,(_e,data)=>{if(data.fatal){setStatus(`Stream failed (${data.details}). It may be offline, geo-blocked, or blocking browser playback.`,'bad');$('overlay').textContent='This channel did not open in the browser. Try another channel or copy the stream URL into VLC.';$('overlay').classList.add('show');}});return;}
+  v.src=url;v.play().catch(()=>setStatus('This browser cannot play the stream format.','bad'));
+}
+function toggleFavorite(){if(state.current<0)return;const url=state.channels[state.current].url;if(state.favorites.has(url))state.favorites.delete(url);else state.favorites.add(url);saveFavs();$('favBtn').textContent=state.favorites.has(url)?'★ Favorite':'☆ Favorite';applyFilter();}
+function toggleFavFilter(){state.favoritesOnly=!state.favoritesOnly;$('favoritesBtn').textContent=state.favoritesOnly?'★ Showing Favorites':'☆ Favorites';applyFilter();}
+
+$('source').addEventListener('change',e=>loadSource(e.target.value));$('reloadBtn').onclick=()=>loadSource($('source').value);$('search').addEventListener('input',applyFilter);$('group').addEventListener('change',applyFilter);$('favoritesBtn').onclick=toggleFavFilter;$('prevBtn').onclick=previous;$('nextBtn').onclick=next;$('favBtn').onclick=toggleFavorite;$('playBtn').onclick=()=>{const v=$('video');if(state.current<0&&state.filtered.length){playIndex(state.filtered[0]);return;}if(v.paused)v.play().catch(()=>playIndex(state.current));else v.pause();};$('video').addEventListener('playing',()=>setStatus('Playing','ok'));$('video').addEventListener('pause',()=>{if(state.current>=0)setStatus('Paused');});$('video').addEventListener('waiting',()=>setStatus('Buffering…','warn'));$('video').addEventListener('error',()=>setStatus('Playback error — the stream may be offline or browser-blocked.','bad'));
+$('copyBtn').onclick=async()=>{if(state.current<0)return;try{await navigator.clipboard.writeText(state.channels[state.current].url);setStatus('Stream URL copied','ok');}catch{setStatus('Could not copy URL','bad');}};$('fullBtn').onclick=()=>{const el=$('video');if(el.requestFullscreen)el.requestFullscreen();};
+$('customBtn').onclick=()=>$('customModal').classList.add('show');$('cancelCustom').onclick=()=>$('customModal').classList.remove('show');$('loadCustom').onclick=async()=>{const u=$('customUrl').value.trim();if(!/^https:\/\//i.test(u)){alert('Use an HTTPS playlist URL for the browser app.');return;}$('customModal').classList.remove('show');sourceNote('Custom playlist loaded directly in your browser.');await loadPlaylistUrl(u,'Custom M3U');};
+$('fileInput').addEventListener('change',async e=>{const f=e.target.files?.[0];if(!f)return;loadText(await f.text(),f.name,'local file');e.target.value='';});
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();state.installPrompt=e;$('installBtn').hidden=false;});$('installBtn').onclick=async()=>{if(!state.installPrompt)return;state.installPrompt.prompt();await state.installPrompt.userChoice;state.installPrompt=null;$('installBtn').hidden=true;};
+if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+loadSource('free-tv');
+</script>
+</body>
+</html>
